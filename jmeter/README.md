@@ -22,7 +22,10 @@ O trabalho pede 100 clientes simultâneos como exemplo. A sugestão é usar:
 
 ## Variáveis sugeridas
 
-`clienteId`: um ID entre 1 e 50000.
+`dataset_size`: quantidade de registros disponíveis. O valor padrão dos planos é
+`50000` e pode ser sobrescrito na linha de comando com `-Jdataset_size=20000`.
+Os GETs sorteiam IDs entre 1 e esse limite, evitando 404 inválidos quando o
+dataset for reduzido.
 
 Para não contar como escrita os pedidos que falharam, use um listener ou uma asserção de HTTP 2xx.
 

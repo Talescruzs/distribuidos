@@ -41,7 +41,7 @@ def get_sampler():
       <stringProp name="HTTPSampler.domain">localhost</stringProp>
       <stringProp name="HTTPSampler.port">5000</stringProp>
       <stringProp name="HTTPSampler.protocol">http</stringProp>
-      <stringProp name="HTTPSampler.path">/api/clientes/${__Random(1,50000)}</stringProp>
+      <stringProp name="HTTPSampler.path">/api/clientes/${__Random(1,${dataset_size})}</stringProp>
       <stringProp name="HTTPSampler.method">GET</stringProp>
       <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
       <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -123,7 +123,13 @@ def make_plan(read_threads, write_threads, filename, title):
                    testclass="Arguments"
                    testname="Variáveis"
                    enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="dataset_size" elementType="Argument">
+            <stringProp name="Argument.name">dataset_size</stringProp>
+            <stringProp name="Argument.value">${{__P(dataset_size,50000)}}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
 
       <stringProp name="TestPlan.user_define_classpath"></stringProp>

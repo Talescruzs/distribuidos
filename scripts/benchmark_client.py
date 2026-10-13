@@ -19,11 +19,11 @@ def gerar_payload(i):
     }
 
 
-def worker(base_url, operation, index):
+def worker(base_url, operation, index, dataset_size):
     start = time.perf_counter()
     try:
         if operation == "read":
-            cliente_id = random.randint(1, 50000)
+            cliente_id = random.randint(1, dataset_size)
             response = requests.get(f"{base_url}/api/clientes/{cliente_id}", timeout=10)
         else:
             response = requests.post(
@@ -43,6 +43,7 @@ def main():
     parser.add_argument("--clients", type=int, default=100)
     parser.add_argument("--requests", type=int, default=1000)
     parser.add_argument("--read-percent", type=int, default=50)
+    parser.add_argument("--dataset-size", type=int, default=50000)
     args = parser.parse_args()
 
     operations = [
@@ -53,7 +54,10 @@ def main():
     start = time.perf_counter()
     results = []
     with ThreadPoolExecutor(max_workers=args.clients) as executor:
-        futures = [executor.submit(worker, args.url, op, i) for i, op in enumerate(operations)]
+        futures = [
+            executor.submit(worker, args.url, op, i, args.dataset_size)
+            for i, op in enumerate(operations)
+        ]
         for future in as_completed(futures):
             results.append(future.result())
     elapsed = time.perf_counter() - start
