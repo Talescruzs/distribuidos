@@ -45,11 +45,9 @@ def main():
     started = time.perf_counter()
     with engine.begin() as connection:
         connection.execute(text("TRUNCATE TABLE clientes RESTART IDENTITY"))
-
         for inicio in range(1, args.total + 1, args.batch_size):
             quantidade = min(args.batch_size, args.total - inicio + 1)
             registros = gerar_lote(fake, inicio, quantidade)
-
             connection.execute(
                 text("""
                     INSERT INTO clientes (id, nome, email, cpf, cidade, idade)
@@ -57,19 +55,7 @@ def main():
                 """),
                 registros,
             )
-
-            print(
-                f"Inseridos {inicio + quantidade - 1}/{args.total}",
-                flush=True
-            )
-
-        connection.execute(text("""
-            SELECT setval(
-                pg_get_serial_sequence('clientes', 'id'),
-                COALESCE((SELECT MAX(id) FROM clientes), 1),
-                (SELECT COUNT(*) > 0 FROM clientes)
-            )
-        """))
+            print(f"Inseridos {inicio + quantidade - 1}/{args.total}", flush=True)
 
     elapsed = time.perf_counter() - started
     print(f"Carga concluída: {args.total} registros em {elapsed:.2f}s")

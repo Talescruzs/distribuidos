@@ -6,27 +6,21 @@ Implementação inicial do trabalho usando **Python + Flask + PostgreSQL**.
 
 ```text
 Clientes/JMeter
-
       |
-
       v
-
-Servidor Web Flask/Gunicorn
-
+ Servidor Web Flask/Gunicorn
       |
-
       v
-
-PostgreSQL
+ PostgreSQL
 ```
 
 O servidor expõe uma API REST de clientes. O banco é mantido separado do servidor web para representar os componentes distribuídos do exercício.
 
 ## 2. Requisitos
 
-* Docker e Docker Compose
-* Python 3.12+, caso o benchmark Python seja usado fora do container
-* Apache JMeter, para a avaliação principal
+- Docker e Docker Compose
+- Python 3.12+, caso o benchmark Python seja usado fora do container
+- Apache JMeter, para a avaliação principal
 
 ## 3. Subir o sistema
 
@@ -46,14 +40,11 @@ curl http://localhost:5000/health
 docker compose exec web python scripts/generate_dataset.py --total 50000 --database-url postgresql+psycopg://cruduser:crudpass@db:5432/cruddb
 ```
 
-Para reproduzir o experimento com 20 mil registros:
+Para reproduzir o experimento com 20 mil:
 
 ```bash
 docker compose exec web python scripts/generate_dataset.py --total 20000 --database-url postgresql+psycopg://cruduser:crudpass@db:5432/cruddb
 ```
-
-Nos planos JMeter, use `-Jdataset_size=20000` para que as leituras sorteiem
-somente IDs existentes no dataset reduzido.
 
 A quantidade de registros pode ser conferida com:
 
@@ -66,13 +57,13 @@ docker compose exec db psql -U cruduser -d cruddb -c "SELECT COUNT(*) FROM clien
 ### Listar
 
 ```bash
-curl "http://localhost:5000/api/clientes?page=1&per_page=20"
+curl http://localhost:5000/api/clientes?page=1\&per_page=20
 ```
 
 Filtro usado na experiência com índice:
 
 ```bash
-curl "http://localhost:5000/api/clientes?cidade=Santa%20Maria"
+curl 'http://localhost:5000/api/clientes?cidade=Santa%20Maria'
 ```
 
 ### Buscar por ID
@@ -309,29 +300,25 @@ conforme o plano acima.
 
 A implementação inicial usa SQL/PostgreSQL por oferecer transações, constraints e consultas estruturadas adequadas ao CRUD. Para a discussão final, a comparação com NoSQL pode considerar:
 
-* modelo de dados e flexibilidade de esquema;
-* garantias transacionais;
-* consistência;
-* tipos de consulta utilizados;
-* escalabilidade horizontal;
-* custo de joins e consultas agregadas;
-* simplicidade operacional.
+- modelo de dados e flexibilidade de esquema;
+- garantias transacionais;
+- consistência;
+- tipos de consulta utilizados;
+- escalabilidade horizontal;
+- custo de joins e consultas agregadas;
+- simplicidade operacional.
 
 A conclusão do trabalho deve ser baseada nos resultados medidos e no perfil de acesso do sistema, e não em uma afirmação de que SQL ou NoSQL é universalmente melhor.
 
-## 11. Teste rápido em Python
+## 8. Teste rápido em Python
 
 Também existe um cliente concorrente simples, mas o instrumento principal recomendado para o trabalho é o JMeter:
 
 ```bash
-python scripts/benchmark_client.py \
-  --url http://localhost:5000 \
-  --clients 100 \
-  --requests 1000 \
-  --read-percent 50
+python scripts/benchmark_client.py --url http://localhost:5000 --clients 100 --requests 1000 --read-percent 50
 ```
 
-Troque `--read-percent` para `75` ou `25` nos cenários B e C.
+Troque `--read-percent` para 75 ou 25 nos cenários B e C.
 
 ## 12. Conteúdo recomendado para o PDF
 
